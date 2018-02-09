@@ -72,6 +72,7 @@ class Trainer:
             print("epoch {}: - loss: {}".format(epoch, np.mean(loss_list)))
             if self.args.linear_scheduler:
                 self.linear_scheduler(epoch)
+                print('learning rate:', self.args.learning_rate * (1 - epoch / self.args.num_epochs))
 
     def test(self):
         self.model.eval()

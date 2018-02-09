@@ -6,6 +6,7 @@ import torch.backends.cudnn as cudnn
 from torch.nn import functional as F
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+from torchvision.utils import save_image
 from tqdm import tqdm
 import numpy as np
 
@@ -31,7 +32,7 @@ class Trainer:
 
         if args.dataset == 'CIFAR10':
             # Data Loading
-            kwargs = {'num_workers': 2, 'pin_memory': True} if args.cuda else {}
+            kwargs = {'num_workers': 4, 'pin_memory': True} if args.cuda else {}
 
             transform_train = transforms.Compose([
                 transforms.ToTensor(),
@@ -75,7 +76,11 @@ class Trainer:
                 self.linear_scheduler(epoch)
                 print('learning rate:', self.args.learning_rate * (1 - epoch / self.args.num_epochs))
 
-    def test(self):
+            if epoch % 20 == 0:
+                self.test(epoch)
+
+    def test(self, epoch):
+        print('testing...')
         self.model.eval()
         test_loss = 0
         for i, (data, _) in enumerate(self.test_loader):
@@ -87,12 +92,13 @@ class Trainer:
             if i == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
-                                        recon_batch.view(self.args.batch_size, 1, 28, 28)[:n]])
-                # save_image(comparison.data.cpu(),
-                #            'results/reconstruction_' + str(epoch) + '.png', nrow=n)
+                                        recon_batch.view(self.args.batch_size, 1, 32, 32)[:n]])
+                save_image(comparison.data.cpu(),
+                           'results/reconstruction_' + str(epoch) + '.png', nrow=n)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
+        self.model.train()
 
     def validate(self):
         pass

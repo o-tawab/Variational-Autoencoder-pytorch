@@ -2,7 +2,7 @@
   "exp_name": "VAE-CIFAR10",
   "dataset": "CIFAR10",
   "no_cuda": false,
-  "num_epochs": 200,
+  "num_epochs": 500,
   "start_epoch": 0,
   "learning_rate": 0.001,
   "batch_size": 32,

@@ -70,6 +70,7 @@ class Trainer:
                 loss_list.append(loss.data[0])
 
             print("epoch {}: - loss: {}".format(epoch, np.mean(loss_list)))
+            self.save_checkpoint(epoch)
             if self.args.linear_scheduler:
                 self.linear_scheduler(epoch)
                 print('learning rate:', self.args.learning_rate * (1 - epoch / self.args.num_epochs))
@@ -97,7 +98,7 @@ class Trainer:
         pass
 
     def loss_function(self, recon_x, x, mu, logvar):
-        BCE = F.mse_loss(recon_x, x, size_average=False)
+        BCE = F.mse_loss(recon_x, x, size_average=True)
 
         # see Appendix B from VAE paper:
         # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014

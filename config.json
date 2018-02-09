@@ -3,10 +3,13 @@
   "dataset": "CIFAR10",
   "no_cuda": "True",
   "num_epochs": 200,
+  "start_epoch": 0,
   "learning_rate": 0.001,
   "batch_size": 32,
   "seed": 1,
   "log_interval": 10,
   "weight_decay": 1e-4,
-  "resume": "False"
+  "linear_scheduler": "True",
+  "resume": "False",
+  "checkpoint_path": "./checkpoints"
 }

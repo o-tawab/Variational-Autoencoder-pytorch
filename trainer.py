@@ -55,7 +55,7 @@ class Trainer:
 
     def train(self):
         self.model.train()
-        for epoch in range(self.args.start_epoch, self.args.num_epoch):
+        for epoch in range(self.args.start_epoch, self.args.num_epochs):
             loss_list = []
             print("epoch {}...".format(epoch))
             for batch_idx, (data, _) in enumerate(tqdm(self.train_loader)):

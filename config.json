@@ -1,0 +1,12 @@
+{
+  "exp_name": "VAE-CIFAR10",
+  "dataset": "CIFAR10",
+  "no_cuda": "True",
+  "num_epochs": 200,
+  "learning_rate": 0.001,
+  "batch_size": 32,
+  "seed": 1,
+  "log_interval": 10,
+  "weight_decay": 1e-4,
+  "resume": "False"
+}

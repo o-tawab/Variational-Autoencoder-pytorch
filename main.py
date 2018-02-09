@@ -12,6 +12,7 @@ def main():
 
     torch.manual_seed(args.seed)
     if args.cuda:
+        print('using CUDA...')
         torch.cuda.manual_seed(args.seed)
 
     model = VAE()

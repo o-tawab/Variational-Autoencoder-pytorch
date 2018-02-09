@@ -1,7 +1,7 @@
 {
   "exp_name": "VAE-CIFAR10",
   "dataset": "CIFAR10",
-  "no_cuda": "True",
+  "no_cuda": "False",
   "num_epochs": 200,
   "start_epoch": 0,
   "learning_rate": 0.001,

@@ -137,6 +137,7 @@ class Trainer:
         x = x * 255
         x = x.int()
         x_ = torch.unsqueeze(x, 1)
+        x_ = torch.LongTensor(x_)
 
         x_one_hot = torch.FloatTensor(self.args.batch_size, 255, 3, 32, 32).zero_()
         x_one_hot.scatter_(1, x_, 1.0)

@@ -120,10 +120,11 @@ class Trainer:
             data = Variable(data, volatile=True)
             recon_batch, mu, logvar = self.model(data)
             test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
+            _, indices = recon_batch.max(1)
             if i % 10 == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
-                                        recon_batch[:n]])
+                                        indices.view(-1, 3, 32, 32)[:n]])
                 save_image(comparison.data.cpu(),
                            self.args.exp_name + '/train_results/reconstruction_' + str(i) + '.png', nrow=n)
 

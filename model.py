@@ -33,9 +33,11 @@ class VAE(nn.Module):
         self.bn6 = nn.BatchNorm2d(32)
         self.conv7 = nn.ConvTranspose2d(32, 16, kernel_size=3, stride=2, padding=1, output_padding=1, bias=False)
         self.bn7 = nn.BatchNorm2d(16)
-        self.conv8 = nn.ConvTranspose2d(16, 3, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv8 = nn.ConvTranspose2d(16, 3 * 255, kernel_size=3, stride=1, padding=1, bias=False)
 
         self.relu = nn.ReLU()
+
+        self.softmax = nn.Softmax(dim=1)
 
     def encode(self, x):
         conv1 = self.relu(self.bn1(self.conv1(x)))
@@ -61,7 +63,7 @@ class VAE(nn.Module):
         conv5 = self.relu(self.bn5(self.conv5(fc4)))
         conv6 = self.relu(self.bn6(self.conv6(conv5)))
         conv7 = self.relu(self.bn7(self.conv7(conv6)))
-        return self.conv8(conv7)
+        return self.softmax(self.conv8(conv7).view(-1, 255, 3, 32, 32))
 
     def forward(self, x):
         mu, logvar = self.encode(x)

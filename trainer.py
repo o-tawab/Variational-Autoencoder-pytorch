@@ -29,8 +29,8 @@ class Trainer:
             cudnn.enabled = True
             cudnn.benchmark = True
 
-        if not os.path.exists(self.args.exp_name + '/' + self.args.checkpoint_path):
-            os.makedirs(self.args.exp_name + '/' + self.args.checkpoint_path)
+        if not os.path.exists(self.args.exp_name + '/checkpoints'):
+            os.makedirs(self.args.exp_name + '/checkpoints')
 
         if not os.path.exists(self.args.exp_name + '/results'):
             os.makedirs(self.args.exp_name + '/results')
@@ -120,7 +120,7 @@ class Trainer:
             data = Variable(data, volatile=True)
             recon_batch, mu, logvar = self.model(data)
             test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
-            if i % 2 == 0:
+            if i % 10 == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
                                         recon_batch[:n]])

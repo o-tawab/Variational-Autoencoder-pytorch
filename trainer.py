@@ -104,7 +104,7 @@ class Trainer:
                 comparison = torch.cat([data[:n],
                                         recon_batch.view(self.args.batch_size, 3, 32, 32)[:n]])
                 save_image(comparison.data.cpu(),
-                           'results/reconstruction_' + str(epoch) + '.png', nrow=n)
+                           self.args.exp_name + '/results/reconstruction_' + str(epoch) + '.png', nrow=n)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
@@ -125,7 +125,7 @@ class Trainer:
                 comparison = torch.cat([data[:n],
                                         recon_batch.view(self.args.batch_size, 3, 32, 32)[:n]])
                 save_image(comparison.data.cpu(),
-                           'train_results/reconstruction_' + str(i) + '.png', nrow=n)
+                           self.args.exp_name + '/train_results/reconstruction_' + str(i) + '.png', nrow=n)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))

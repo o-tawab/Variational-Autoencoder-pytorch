@@ -44,7 +44,7 @@ class Trainer:
 
         if args.dataset == 'CIFAR10':
             # Data Loading
-            kwargs = {'num_workers': 4, 'pin_memory': True} if args.cuda else {}
+            kwargs = {'num_workers': 2, 'pin_memory': True} if args.cuda else {}
 
             transform_train = transforms.Compose([
                 transforms.ToTensor()

@@ -1,5 +1,5 @@
 {
-  "exp_name": "VAE-CIFAR10",
+  "exp_name": "VAE_CIFAR10_ce_loss",
   "dataset": "CIFAR10",
   "no_cuda": false,
   "num_epochs": 500,

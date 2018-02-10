@@ -137,9 +137,10 @@ class Trainer:
     def loss_function(self, recon_x, x, mu, logvar):
         # BCE = F.mse_loss(recon_x, x, size_average=False)
         # print(recon_x.max(1))
-        # x = x * 255
-        x.data = x.data.long().view(-1)
+        x = x * 255
+        x.data = x.data.int().long().view(-1)
         recon_x = recon_x.view(-1, 256)
+        # print(x)
 
         CE = self.ce_loss(recon_x, x)
 

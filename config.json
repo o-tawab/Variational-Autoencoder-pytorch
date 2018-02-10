@@ -12,5 +12,5 @@
   "linear_scheduler": true,
   "resume": true,
   "checkpoint_path": "./checkpoints/checkpoint.pth",
-  "train": false
+  "train": true
 }

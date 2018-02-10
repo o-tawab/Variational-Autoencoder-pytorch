@@ -156,7 +156,7 @@ class Trainer:
         if self.args.resume:
             try:
                 print("Loading checkpoint '{}'...".format(self.args.checkpoint_path))
-                checkpoint = torch.load(self.args.checkpoint_path)
+                checkpoint = torch.load(self.args.exp_name + '/' + self.args.checkpoint_path)
                 self.args.start_epoch = checkpoint['epoch']
                 self.model.load_state_dict(checkpoint['state_dict'])
                 self.optimizer.load_state_dict(checkpoint['optimizer'])

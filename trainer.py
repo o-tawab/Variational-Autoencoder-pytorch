@@ -21,6 +21,7 @@ class Trainer:
                                     weight_decay=self.args.weight_decay)
 
         self.loss = self.loss_function
+        self.ce_loss = torch.nn.CrossEntropyLoss(size_average=False)
 
         # If NVIDIA CUDA is available.
         if self.args.cuda:
@@ -134,17 +135,13 @@ class Trainer:
 
     def loss_function(self, recon_x, x, mu, logvar):
         # BCE = F.mse_loss(recon_x, x, size_average=False)
+
         x = x * 255
-        x = x.data.int()
-        x_ = torch.unsqueeze(x, 1)
+        x.data = x.data.int().long().view(-1)
+        recon_x = recon_x.view(-1, 256)
 
-        print(x_)
-        print(x_.shape)
-
-
-        x_one_hot = torch.FloatTensor(self.args.batch_size, 255, 3, 32, 32).zero_()
-        x_one_hot.scatter_(1, x_.cpu().long(), 1.0)
-        BCE = F.binary_cross_entropy(recon_x, x_one_hot, size_average=False)
+        CE = self.ce_loss(recon_x, x)
+        # BCE = F.binary_cross_entropy(recon_x, x, size_average=False)
 
         # see Appendix B from VAE paper:
         # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
@@ -152,7 +149,7 @@ class Trainer:
         # 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
         KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
-        return BCE + KLD
+        return CE + KLD
 
     def save_checkpoint(self, cur_epoch, is_best=False):
         """Saves checkpoint to disk"""

@@ -1,7 +1,7 @@
 {
   "exp_name": "VAE_CIFAR10_ce_loss",
   "dataset": "CIFAR10",
-  "no_cuda": false,
+  "no_cuda": true,
   "num_epochs": 500,
   "start_epoch": 0,
   "learning_rate": 0.001,

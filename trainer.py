@@ -102,7 +102,7 @@ class Trainer:
             recon_batch, mu, logvar = self.model(data)
             test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
             _, indices = recon_batch.max(1)
-            indices.data.float()
+            indices.data = indices.data.float() / 255
             if i == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],

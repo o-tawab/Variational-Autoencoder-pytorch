@@ -137,11 +137,11 @@ class Trainer:
         x = x * 255
         x = x.int()
         x_ = torch.unsqueeze(x, 1)
-        xx = torch.LongTensor(self.args.batch_size, 255, 3, 32, 32).fill_(0) + x_.data
+        # xx = torch.LongTensor(self.args.batch_size, 255, 3, 32, 32).fill_(0) + x_.data
         # xx = x_
 
         x_one_hot = torch.FloatTensor(self.args.batch_size, 255, 3, 32, 32).zero_()
-        x_one_hot.scatter_(1, xx, 1.0)
+        x_one_hot.scatter_(1, x_.data.long(), 1.0)
         BCE = F.binary_cross_entropy(recon_x, x_one_hot, size_average=False)
 
         # see Appendix B from VAE paper:

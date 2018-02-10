@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 from tqdm import tqdm
 import numpy as np
+import os
 
 
 class Trainer:
@@ -27,6 +28,15 @@ class Trainer:
             # To select the best algorithms for training.
             cudnn.enabled = True
             cudnn.benchmark = True
+
+        if not os.path.exists(self.args.exp_name + '/' + self.args.checkpoint_path):
+            os.makedirs(self.args.exp_name + '/' + self.args.checkpoint_path)
+
+        if not os.path.exists(self.args.exp_name + '/results'):
+            os.makedirs(self.args.exp_name + '/results')
+
+        if not os.path.exists(self.args.exp_name + '/train_results'):
+            os.makedirs(self.args.exp_name + '/train_results')
 
         self.load_checkpoint()
 
@@ -100,8 +110,26 @@ class Trainer:
         print('====> Test set loss: {:.4f}'.format(test_loss))
         self.model.train()
 
-    def validate(self):
-        pass
+    def test_on_trainings_set(self):
+        print('testing...')
+        self.model.eval()
+        test_loss = 0
+        for i, (data, _) in enumerate(self.train_loader):
+            if self.args.cuda:
+                data = data.cuda()
+            data = Variable(data, volatile=True)
+            recon_batch, mu, logvar = self.model(data)
+            test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
+            if i % 2 == 0:
+                n = min(data.size(0), 8)
+                comparison = torch.cat([data[:n],
+                                        recon_batch.view(self.args.batch_size, 3, 32, 32)[:n]])
+                save_image(comparison.data.cpu(),
+                           'train_results/reconstruction_' + str(i) + '.png', nrow=n)
+
+        test_loss /= len(self.test_loader.dataset)
+        print('====> Test set loss: {:.4f}'.format(test_loss))
+        self.model.train()
 
     def loss_function(self, recon_x, x, mu, logvar):
         BCE = F.mse_loss(recon_x, x, size_average=False)
@@ -116,7 +144,7 @@ class Trainer:
 
     def save_checkpoint(self, cur_epoch, is_best=False):
         """Saves checkpoint to disk"""
-        filename = self.args.checkpoint_path
+        filename = self.args.exp_name + '/' + self.args.checkpoint_path
         state = {'epoch': cur_epoch + 1, 'state_dict': self.model.state_dict(),
                  'optimizer': self.optimizer.state_dict()}
         torch.save(state, filename)

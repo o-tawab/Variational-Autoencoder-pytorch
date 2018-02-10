@@ -21,7 +21,10 @@ def main():
     Initializer.initialize(model, initialization=init.xavier_uniform, gain=init.calculate_gain('relu'))
     trainer = Trainer(model, args)
 
-    trainer.train()
+    if args.train:
+        trainer.train()
+
+    trainer.test_on_trainings_set()
 
 
 if __name__ == '__main__':

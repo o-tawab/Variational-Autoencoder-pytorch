@@ -10,6 +10,7 @@
   "log_interval": 10,
   "weight_decay": 1e-4,
   "linear_scheduler": true,
-  "resume": false,
-  "checkpoint_path": "./checkpoints/checkpoint.pth"
+  "resume": true,
+  "checkpoint_path": "./checkpoints/checkpoint.pth",
+  "train": false
 }

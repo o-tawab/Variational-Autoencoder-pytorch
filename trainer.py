@@ -135,6 +135,7 @@ class Trainer:
 
     def loss_function(self, recon_x, x, mu, logvar):
         # BCE = F.mse_loss(recon_x, x, size_average=False)
+<<<<<<< HEAD
 
         x = x * 255
         x.data = x.data.int().long().view(-1)
@@ -142,6 +143,17 @@ class Trainer:
 
         CE = self.ce_loss(recon_x, x)
         # BCE = F.binary_cross_entropy(recon_x, x, size_average=False)
+=======
+        x = x * 255
+        x = x.data.int()
+        x_ = torch.unsqueeze(x, 1)
+
+        print(x_.shape)
+
+        x_one_hot = torch.FloatTensor(self.args.batch_size, 255, 3, 32, 32).zero_()
+        x_one_hot.scatter_(1, x_.cpu().long(), 1.0)
+        BCE = F.binary_cross_entropy(recon_x, x_one_hot, size_average=False)
+>>>>>>> e112df489993776d7230158fae211b0fa52906e8
 
         # see Appendix B from VAE paper:
         # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014

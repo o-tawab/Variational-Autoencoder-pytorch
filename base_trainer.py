@@ -7,8 +7,6 @@ from torch.autograd import Variable
 from torch.optim.rmsprop import RMSprop
 from tqdm import tqdm
 
-from utils import AverageTracker
-
 
 class BaseTrainer:
     def __init__(self, model, loss, train_loader, test_loader, args):
@@ -38,19 +36,20 @@ class BaseTrainer:
     def get_optimizer(self):
         raise NotImplementedError
 
-    def adjust_learning_rate(self, optimizer, epoch):
+    def adjust_learning_rate(self, epoch):
         """Sets the learning rate to the initial LR multiplied by 0.98 every epoch"""
         learning_rate = self.args.learning_rate * (self.args.learning_rate_decay ** epoch)
-        for param_group in optimizer.param_groups:
+        for param_group in self.optimizer.param_groups:
             param_group['lr'] = learning_rate
+        return learning_rate
 
-    def save_checkpoint(self, state, is_best, filename='checkpoint.pth.tar'):
+    def save_checkpoint(self, state, is_best=False, filename='checkpoint.pth.tar'):
         '''
+        a function to save checkpoint of the training
         :param state: {'epoch': cur_epoch + 1, 'state_dict': self.model.state_dict(),
                             'optimizer': self.optimizer.state_dict()}
-        :param is_best:
-        :param filename:
-        :return:
+        :param is_best: boolean to save the checkpoint aside if it has the best score so far
+        :param filename: the name of the saved file
         '''
         torch.save(state, self.args.checkpoint_dir + filename)
         if is_best:

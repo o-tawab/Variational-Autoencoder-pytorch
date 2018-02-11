@@ -1,72 +1,20 @@
 from torch.autograd import Variable
 from torch import optim
 import torch
-import shutil
-import torch.backends.cudnn as cudnn
-from torch.nn import functional as F
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 from tqdm import tqdm
 import numpy as np
-import os
 
 from base_trainer import BaseTrainer
 
 
 class Trainer(BaseTrainer):
-    def __init__(self, model, train_loader, test_loader, args):
-        super(Trainer, self).__init__(model, train_loader, test_loader, args)
+    def __init__(self, model, loss, train_loader, test_loader, args):
+        super(Trainer, self).__init__(model, loss, train_loader, test_loader, args)
         self.model = model
         self.args = args
         self.args.start_epoch = 0
-        self.optimizer = self.get_optimiter()
-
-        self.loss = self.get_loss()
-        self.ce_loss = torch.nn.CrossEntropyLoss(size_average=False)
-
-        # If NVIDIA CUDA is available.
-        if self.args.cuda:
-            self.model.cuda()
-            self.ce_loss.cuda()
-            # To select the best algorithms for training.
-            cudnn.enabled = True
-            cudnn.benchmark = True
-
-        if not os.path.exists(self.args.exp_name + '/checkpoints'):
-            os.makedirs(self.args.exp_name + '/checkpoints')
-
-        if not os.path.exists(self.args.exp_name + '/results'):
-            os.makedirs(self.args.exp_name + '/results')
-
-        if not os.path.exists(self.args.exp_name + '/train_results'):
-            os.makedirs(self.args.exp_name + '/train_results')
-
-        self.load_checkpoint()
-
-        if args.dataset == 'CIFAR10':
-            # Data Loading
-            kwargs = {'num_workers': 2, 'pin_memory': True} if args.cuda else {}
-
-            transform_train = transforms.Compose([
-                transforms.ToTensor()
-                # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-            ])
-
-            transform_test = transforms.Compose([
-                transforms.ToTensor()
-                # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-            ])
-
-            train_set = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
-            self.train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
-                                                            **kwargs)
-
-            test_set = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
-            self.test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=False,
-                                                           **kwargs)
-
-            self.classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+        self.optimizer = self.get_optimizer()
 
     def train(self):
         self.model.train()
@@ -87,8 +35,8 @@ class Trainer(BaseTrainer):
             print("epoch {}: - loss: {}".format(epoch, np.mean(loss_list)))
             self.save_checkpoint(epoch)
             if self.args.linear_scheduler:
-                self.linear_scheduler(epoch)
-                print('learning rate:', self.args.learning_rate * (1 - epoch / self.args.num_epochs))
+                new_lr = self.adjust_learning_rate(epoch)
+                print('learning rate:', new_lr)
 
             if epoch % 20 == 0:
                 self.test(epoch)
@@ -110,7 +58,7 @@ class Trainer(BaseTrainer):
                 comparison = torch.cat([data[:n],
                                         indices.view(-1, 3, 32, 32)[:n]])
                 save_image(comparison.data.cpu(),
-                           self.args.exp_name + '/results/reconstruction_' + str(epoch) + '.png', nrow=n)
+                           self.args.exp_name + '/results/reconstruction_' + str(cur_epoch) + '.png', nrow=n)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
@@ -138,37 +86,6 @@ class Trainer(BaseTrainer):
         print('====> Test set loss: {:.4f}'.format(test_loss))
         self.model.train()
 
-    def get_optimiter(self):
+    def get_optimizer(self):
         return optim.Adam(self.model.parameters(), lr=self.args.learning_rate,
-                                    weight_decay=self.args.weight_decay)
-
-    def save_checkpoint(self, cur_epoch, is_best=False):
-        """Saves checkpoint to disk"""
-        filename = self.args.exp_name + '/' + self.args.checkpoint_path
-        state = {'epoch': cur_epoch + 1, 'state_dict': self.model.state_dict(),
-                 'optimizer': self.optimizer.state_dict()}
-        torch.save(state, filename)
-        if is_best:
-            shutil.copyfile(filename, 'model_best.pth.tar')
-
-    def load_checkpoint(self):
-        """Loads checkpoint from disk"""
-        if self.args.resume:
-            try:
-                print("Loading checkpoint '{}'...".format(self.args.checkpoint_path))
-                checkpoint = torch.load(self.args.exp_name + '/' + self.args.checkpoint_path)
-                self.args.start_epoch = checkpoint['epoch']
-                self.model.load_state_dict(checkpoint['state_dict'])
-                self.optimizer.load_state_dict(checkpoint['optimizer'])
-                print("Checkpoint Loaded. '{}' at epoch {}\n\n".format(self.args.checkpoint_path, checkpoint['epoch']))
-            except:
-                print("No checkpoints exist. Aborting.\n\n")
-
-    def linear_scheduler(self, epoch):
-        """Decay learning rate linearly"""
-        lr = self.args.learning_rate * (1 - epoch / self.args.num_epochs)
-
-        # Stopping criterion for decaying.
-        if lr > min(self.args.learning_rate / 100.0, 1e-6):
-            for param_group in self.optimizer.param_groups:
-                param_group['lr'] = lr
+                          weight_decay=self.args.weight_decay)

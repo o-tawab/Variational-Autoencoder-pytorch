@@ -29,7 +29,6 @@
   },
   "num_classes": 10,
   "dataloader_workers": 4,
-  "download_dataset": true,
   "shuffle": true,
 
   "batch_size": 64,

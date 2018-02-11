@@ -1,16 +1,49 @@
+//{
+//  "exp_name": "VAE_CIFAR10_ce_loss",
+//  "dataset": "CIFAR10",
+//  "no_cuda": false,
+//  "num_epochs": 500,
+//  "start_epoch": 0,
+//  "learning_rate": 0.001,
+//  "batch_size": 32,
+//  "seed": 1,
+//  "log_interval": 10,
+//  "weight_decay": 1e-4,
+//  "linear_scheduler": true,
+//  "resume": true,
+//  "checkpoint_path": "./checkpoints/checkpoint.pth",
+//  "train": true
+//}
+
 {
-  "exp_name": "VAE_CIFAR10_ce_loss",
-  "dataset": "CIFAR10",
-  "no_cuda": false,
-  "num_epochs": 500,
-  "start_epoch": 0,
-  "learning_rate": 0.001,
-  "batch_size": 32,
+  "experiment_dir": "VAE_CIFAR10_ce_loss",
+
+  "num_epochs": 800,
   "seed": 1,
-  "log_interval": 10,
-  "weight_decay": 1e-4,
-  "linear_scheduler": true,
+
+  "dataset": "CIFAR10",
+  "input_shape":{
+    "width": 32,
+    "hight": 32,
+    "channels": 3
+  },
+  "num_classes": 10,
+  "dataloader_workers": 4,
+  "download_dataset": true,
+  "shuffle": true,
+
+  "batch_size": 64,
+  "weight_decay": 5e-4,
+  "learning_rate": 1e-3,
+  "learning_rate_decay": 0.98,
+
   "resume": true,
-  "checkpoint_path": "./checkpoints/checkpoint.pth",
-  "train": true
+  "resume_from": "checkpoint.pth.tar",
+  "test_every": 10,
+  "to_train": true,
+  "to_test": true,
+
+  "no_cuda": false,
+  "pin_memory": true,
+  "async_loading": true
 }

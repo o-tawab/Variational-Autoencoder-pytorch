@@ -11,16 +11,18 @@ from tqdm import tqdm
 import numpy as np
 import os
 
+from base_trainer import BaseTrainer
 
-class Trainer:
-    def __init__(self, model, args):
+
+class Trainer(BaseTrainer):
+    def __init__(self, model, train_loader, test_loader, args):
+        super(Trainer, self).__init__(model, train_loader, test_loader, args)
         self.model = model
         self.args = args
         self.args.start_epoch = 0
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.learning_rate,
-                                    weight_decay=self.args.weight_decay)
+        self.optimizer = self.get_optimiter()
 
-        self.loss = self.loss_function
+        self.loss = self.get_loss()
         self.ce_loss = torch.nn.CrossEntropyLoss(size_average=False)
 
         # If NVIDIA CUDA is available.
@@ -91,7 +93,7 @@ class Trainer:
             if epoch % 20 == 0:
                 self.test(epoch)
 
-    def test(self, epoch):
+    def test(self, cur_epoch):
         print('testing...')
         self.model.eval()
         test_loss = 0
@@ -136,23 +138,9 @@ class Trainer:
         print('====> Test set loss: {:.4f}'.format(test_loss))
         self.model.train()
 
-    def loss_function(self, recon_x, x, mu, logvar):
-        # BCE = F.mse_loss(recon_x, x, size_average=False)
-        # print(recon_x.max(1))
-        x = x * 255
-        x.data = x.data.int().long().view(-1)
-        recon_x = recon_x.view(-1, 256)
-        # print(x)
-
-        CE = self.ce_loss(recon_x, x)
-
-        # see Appendix B from VAE paper:
-        # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
-        # https://arxiv.org/abs/1312.6114
-        # 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
-        KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-
-        return CE + KLD
+    def get_optimiter(self):
+        return optim.Adam(self.model.parameters(), lr=self.args.learning_rate,
+                                    weight_decay=self.args.weight_decay)
 
     def save_checkpoint(self, cur_epoch, is_best=False):
         """Saves checkpoint to disk"""

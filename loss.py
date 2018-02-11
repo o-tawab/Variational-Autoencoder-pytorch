@@ -1,11 +1,10 @@
 from torch import nn
-from torch.autograd import Variable
-
+import torch
 
 class Loss(nn.Module):
     def __init__(self):
-        super(VAE, self).__init__()
-        self.ce_loss = torch.nn.CrossEntropyLoss(size_average=False)
+        super(Loss, self).__init__()
+        self.ce_loss = nn.CrossEntropyLoss(size_average=False)
 
     def forward(self, recon_x, x, mu, logvar):
         # BCE = F.mse_loss(recon_x, x, size_average=False)

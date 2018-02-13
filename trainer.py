@@ -64,7 +64,7 @@ class Trainer(BaseTrainer):
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
-        self.summary_writer.add_scalar('testing/loss', test_loss), cur_epoch)
+        self.summary_writer.add_scalar('testing/loss', test_loss, cur_epoch)
         self.model.train()
 
     def test_on_trainings_set(self):

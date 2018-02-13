@@ -12,28 +12,29 @@ from weight_initializer import Initializer
 
 def main():
     # Parse the JSON arguments
-    config_args = parse_args()
+    args = parse_args()
 
     # Create the experiment directories
-    config_args.summary_dir, config_args.checkpoint_dir, config_args.test_results_dir, config_args.train_results_dir = create_experiment_dirs(
-        config_args.experiment_dir)
+    args.summary_dir, args.checkpoint_dir, args.test_results_dir, args.train_results_dir = create_experiment_dirs(
+        args.experiment_dir)
 
     model = VAE()
     loss = Loss()
 
-    if config_args.cuda:
+    args.cuda = not args.no_cuda and torch.cuda.is_available()
+    if args.cuda:
         model.cuda()
         loss.cuda()
         cudnn.enabled = True
         cudnn.benchmark = True
 
     print("Loading Data...")
-    data = CIFAR10DataLoader(config_args)
+    data = CIFAR10DataLoader(args)
     print("Data loaded successfully\n")
 
-    trainer = Train(model, loss, data.trainloader, data.testloader, config_args)
+    trainer = Train(model, loss, data.trainloader, data.testloader, args)
 
-    if config_args.to_train:
+    if args.to_train:
         try:
             print("Training...")
             trainer.train()
@@ -41,7 +42,7 @@ def main():
         except KeyboardInterrupt:
             pass
 
-    if config_args.to_test:
+    if args.to_test:
         print("Testing on training data...")
         trainer.test_on_trainings_set()
         print("Testing Finished\n")

@@ -1,38 +1,72 @@
 import argparse
-from bunch import Bunch
 import json
+import os
+import sys
+from pprint import pprint
+
+import numpy as np
+from easydict import EasyDict as edict
 
 
 def parse_args():
     """
     Parse the arguments of the program
     :return: (config_args)
-    :type: tuple
+    :rtype: tuple
     """
     # Create a parser
-    parser = argparse.ArgumentParser(description='VAE MNIST Example')
-    parser.add_argument('--batch-size', type=int, default=32, metavar='N',
-                        help='input batch size for training (default: 128)')
-    parser.add_argument('--epochs', type=int, default=200, metavar='N',
-                        help='number of epochs to train (default: 200)')
-    parser.add_argument('--no-cuda', action='store_true', default=False,
-                        help='enables CUDA training')
-    parser.add_argument('--seed', type=int, default=1, metavar='S',
-                        help='random seed (default: 1)')
-    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
-                        help='how many batches to wait before logging training status')
-    parser.add_argument('--config', default='./config.json', type=str, help='Configuration file')
+    parser = argparse.ArgumentParser(description="MobileNet-V2 PyTorch Implementation")
+    parser.add_argument('--version', action='version', version='%(prog)s 0.0.1')
+    parser.add_argument('--config', default=None, type=str, help='Configuration file')
+
     # Parse the arguments
     args = parser.parse_args()
 
-    # parse the configurations from the config json file provided
-    if args.config:
-        with open(args.config, 'r') as config_file:
-            config_args_dict = json.load(config_file)
-        # convert the dictionary to a namespace using bunch lib
-        config_args = Bunch(config_args_dict)
+    # Parse the configurations from the config json file provided
+    try:
+        if args.config is not None:
+            with open(args.config, 'r') as config_file:
+                config_args_dict = json.load(config_file)
+        else:
+            print("Add a config file using \'--config file_name.json\'", file=sys.stderr)
+            exit(1)
 
-        return config_args
+    except FileNotFoundError:
+        print("ERROR: Config file not found: {}".format(args.config), file=sys.stderr)
+        exit(1)
+    except json.decoder.JSONDecodeError:
+        print("ERROR: Config file is not a proper JSON file!", file=sys.stderr)
+        exit(1)
 
-    else:
-        return args
+    config_args = edict(config_args_dict)
+
+    pprint(config_args)
+    print("\n")
+
+    return config_args
+
+
+def create_experiment_dirs(exp_dir):
+    """
+    Create Directories of a regular tensorflow experiment directory
+    :param exp_dir:
+    :return summary_dir, checkpoint_dir:
+    """
+    experiment_dir = os.path.realpath(
+        os.path.join(os.path.dirname(__file__))) + "/experiments/" + exp_dir + "/"
+    summary_dir = experiment_dir + 'summaries/'
+    checkpoint_dir = experiment_dir + 'checkpoints/'
+    test_results_dir = experiment_dir + 'test_results/'
+    train_results_dir = experiment_dir + 'train_results/'
+
+    dirs = [summary_dir, checkpoint_dir, test_results_dir, train_results_dir]
+    try:
+        for dir_ in dirs:
+            if not os.path.exists(dir_):
+                os.makedirs(dir_)
+        print("Experiment directories created!")
+        # return experiment_dir, summary_dir, checkpoint_dir
+        return summary_dir, checkpoint_dir, test_results_dir, train_results_dir
+    except Exception as err:
+        print("Creating directories error: {0}".format(err))
+        exit(-1)

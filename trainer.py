@@ -36,7 +36,7 @@ class Trainer(BaseTrainer):
             new_lr = self.adjust_learning_rate(epoch)
             print('learning rate:', new_lr)
 
-            self.summary_writer.add_scalar('training/loss', dummy_s1[0], n_iter)
+            self.summary_writer.add_scalar('training/loss', np.mean(loss_list), epoch)
             self.summary_writer.add_scalar('training/learning_rate', new_lr, epoch)
             self.save_checkpoint(epoch)
             if epoch % 20 == 0:
@@ -59,11 +59,12 @@ class Trainer(BaseTrainer):
                 comparison = torch.cat([data[:n],
                                         indices.view(-1, 3, 32, 32)[:n]])
                 self.summary_writer.add_image('training/image', comparison, cur_epoch)
-                save_image(comparison.data.cpu(),
-                           self.args.exp_name + '/results/reconstruction_' + str(cur_epoch) + '.png', nrow=n)
+                # save_image(comparison.data.cpu(),
+                #            self.args.exp_name + '/results/reconstruction_' + str(cur_epoch) + '.png', nrow=n)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
+        self.summary_writer.add_scalar('testing/loss', test_loss), cur_epoch)
         self.model.train()
 
     def test_on_trainings_set(self):
@@ -82,8 +83,8 @@ class Trainer(BaseTrainer):
                 comparison = torch.cat([data[:n],
                                         indices.view(-1, 3, 32, 32)[:n]])
                 self.summary_writer.add_image('testing/image', comparison, i)
-                save_image(comparison.data.cpu(),
-                           self.args.exp_name + '/train_results/reconstruction_' + str(i) + '.png', nrow=n)
+                # save_image(comparison.data.cpu(),
+                #            self.args.exp_name + '/train_results/reconstruction_' + str(i) + '.png', nrow=n)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))

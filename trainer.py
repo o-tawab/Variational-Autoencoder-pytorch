@@ -33,11 +33,12 @@ class Trainer(BaseTrainer):
                 loss_list.append(loss.data[0])
 
             print("epoch {}: - loss: {}".format(epoch, np.mean(loss_list)))
-            self.save_checkpoint(epoch)
-            if self.args.linear_scheduler:
-                new_lr = self.adjust_learning_rate(epoch)
-                print('learning rate:', new_lr)
+            new_lr = self.adjust_learning_rate(epoch)
+            print('learning rate:', new_lr)
 
+            writer.add_scalar('training/loss', dummy_s1[0], n_iter)
+            writer.add_scalar('training/learning_rate', new_lr, epoch)
+            self.save_checkpoint(epoch)
             if epoch % 20 == 0:
                 self.test(epoch)
 

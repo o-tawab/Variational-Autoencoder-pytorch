@@ -21,7 +21,7 @@
 
   "resume": true,
   "resume_from": "checkpoint.pth.tar",
-  "test_every": 10,
+  "test_every": 20,
   "to_train": true,
   "to_test": false,
 

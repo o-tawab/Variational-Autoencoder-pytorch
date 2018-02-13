@@ -39,7 +39,7 @@ class Trainer(BaseTrainer):
             self.summary_writer.add_scalar('training/loss', np.mean(loss_list), epoch)
             self.summary_writer.add_scalar('training/learning_rate', new_lr, epoch)
             self.save_checkpoint(epoch)
-            if epoch % 20 == 0:
+            if epoch % self.args.test_every == 0:
                 self.test(epoch)
 
     def test(self, cur_epoch):

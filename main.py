@@ -1,6 +1,7 @@
 from __future__ import print_function
 import torch.utils.data
 import torch.nn.init as init
+import torch.backends.cudnn as cudnn
 
 from utils import *
 from model import VAE
@@ -19,9 +20,13 @@ def main():
         args.experiment_dir)
 
     model = VAE()
+
+    # to apply xavier_uniform:
+    Initializer.initialize(model=model, initialization=init.xavier_uniform, gain=init.calculate_gain('relu'))
+
     loss = Loss()
 
-    args.cuda = not args.no_cuda and torch.cuda.is_available()
+    args.cuda = args.cuda and torch.cuda.is_available()
     if args.cuda:
         model.cuda()
         loss.cuda()
@@ -32,7 +37,7 @@ def main():
     data = CIFAR10DataLoader(args)
     print("Data loaded successfully\n")
 
-    trainer = Train(model, loss, data.trainloader, data.testloader, args)
+    trainer = Trainer(model, loss, data.train_loader, data.test_loader, args)
 
     if args.to_train:
         try:

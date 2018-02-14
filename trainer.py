@@ -16,6 +16,10 @@ class Trainer(BaseTrainer):
         self.args.start_epoch = 0
         self.optimizer = self.get_optimizer()
 
+        # Model Loading
+        if args.resume:
+            self.load_checkpoint(self.args.resume_from)
+
     def train(self):
         self.model.train()
         for epoch in range(self.args.start_epoch, self.args.num_epochs):
@@ -38,7 +42,11 @@ class Trainer(BaseTrainer):
 
             self.summary_writer.add_scalar('training/loss', np.mean(loss_list), epoch)
             self.summary_writer.add_scalar('training/learning_rate', new_lr, epoch)
-            self.save_checkpoint(epoch)
+            self.save_checkpoint({
+                'epoch': cur_epoch + 1,
+                'state_dict': self.model.state_dict(),
+                'optimizer': self.optimizer.state_dict(),
+            })
             if epoch % self.args.test_every == 0:
                 self.test(epoch)
 
@@ -78,6 +86,7 @@ class Trainer(BaseTrainer):
             recon_batch, mu, logvar = self.model(data)
             test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
             _, indices = recon_batch.max(1)
+            indices.data = indices.data.float() / 255
             if i % 10 == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],

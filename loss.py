@@ -10,7 +10,10 @@ class Loss(nn.Module):
         # BCE = F.mse_loss(recon_x, x, size_average=False)
         x = x * 255
         x.data = x.data.int().long().view(-1)
-        recon_x = recon_x.view(-1, 256)
+        #print(recon_x.shape)
+        recon_x = recon_x.permute(0,2,3, 4,1) # N * C * W * H
+        #print(recon_x.shape)
+        recon_x = recon_x.contiguous().view(-1, 256)
 
         CE = self.ce_loss(recon_x, x)
 

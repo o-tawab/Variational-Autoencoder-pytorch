@@ -17,13 +17,13 @@
   "batch_size": 64,
   "weight_decay": 5e-4,
   "learning_rate": 1e-3,
-  "learning_rate_decay": 0.98,
+  "learning_rate_decay": 0.99,
 
   "resume": true,
   "resume_from": "checkpoint.pth.tar",
   "test_every": 20,
   "to_train": true,
-  "to_test": false,
+  "to_test": true,
 
   "cuda": true,
   "pin_memory": true,

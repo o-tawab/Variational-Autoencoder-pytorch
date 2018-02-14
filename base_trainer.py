@@ -20,10 +20,6 @@ class BaseTrainer:
         self.loss = loss
         self.optimizer = None
 
-        # Model Loading
-        if args.resume:
-            self.load_checkpoint(self.args.resume_from)
-
         # Tensorboard Writer
         self.summary_writer = SummaryWriter(log_dir=args.summary_dir)
 

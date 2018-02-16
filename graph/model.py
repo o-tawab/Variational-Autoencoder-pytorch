@@ -18,11 +18,11 @@ class VAE(nn.Module):
 
         self.fc1 = nn.Linear(8 * 8 * 16, 512)
         self.fc_bn1 = nn.BatchNorm1d(512)
-        self.fc21 = nn.Linear(512, 128)
-        self.fc22 = nn.Linear(512, 128)
+        self.fc21 = nn.Linear(512, 512)
+        self.fc22 = nn.Linear(512, 512)
 
         # Decoder
-        self.fc3 = nn.Linear(128, 512)
+        self.fc3 = nn.Linear(512, 512)
         self.fc_bn3 = nn.BatchNorm1d(512)
         self.fc4 = nn.Linear(512, 8 * 8 * 16)
         self.fc_bn4 = nn.BatchNorm1d(8 * 8 * 16)
@@ -63,7 +63,6 @@ class VAE(nn.Module):
         conv5 = self.relu(self.bn5(self.conv5(fc4)))
         conv6 = self.relu(self.bn6(self.conv6(conv5)))
         conv7 = self.relu(self.bn7(self.conv7(conv6)))
-        # return self.softmax(self.conv8(conv7).view(-1, 255, 3, 32, 32))
         return self.conv8(conv7).view(-1, 256, 3, 32, 32)
 
     def forward(self, x):

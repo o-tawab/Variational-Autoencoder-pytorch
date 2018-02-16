@@ -5,7 +5,7 @@ from torchvision.utils import save_image
 from tqdm import tqdm
 import numpy as np
 
-from base_trainer import BaseTrainer
+from train.base_trainer import BaseTrainer
 
 
 class Trainer(BaseTrainer):
@@ -66,9 +66,7 @@ class Trainer(BaseTrainer):
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
                                         indices.view(-1, 3, 32, 32)[:n]])
-                self.summary_writer.add_image('training/image', comparison, cur_epoch)
-                # save_image(comparison.data.cpu(),
-                #            self.args.exp_name + '/results/reconstruction_' + str(cur_epoch) + '.png', nrow=n)
+                self.summary_writer.add_image('testing_set/image', comparison, cur_epoch)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
@@ -87,16 +85,14 @@ class Trainer(BaseTrainer):
             test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
             _, indices = recon_batch.max(1)
             indices.data = indices.data.float() / 255
-            if i % 10 == 0:
+            if i % 50 == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
                                         indices.view(-1, 3, 32, 32)[:n]])
-                self.summary_writer.add_image('testing/image', comparison, i)
-                # save_image(comparison.data.cpu(),
-                #            self.args.exp_name + '/train_results/reconstruction_' + str(i) + '.png', nrow=n)
+                self.summary_writer.add_image('training_set/image', comparison, i)
 
         test_loss /= len(self.test_loader.dataset)
-        print('====> Test set loss: {:.4f}'.format(test_loss))
+        print('====> Test on training set loss: {:.4f}'.format(test_loss))
         self.model.train()
 
     def get_optimizer(self):

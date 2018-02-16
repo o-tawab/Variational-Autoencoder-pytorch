@@ -15,7 +15,7 @@ def parse_args():
     :rtype: tuple
     """
     # Create a parser
-    parser = argparse.ArgumentParser(description="MobileNet-V2 PyTorch Implementation")
+    parser = argparse.ArgumentParser(description="VAE PyTorch Implementation")
     parser.add_argument('--version', action='version', version='%(prog)s 0.0.1')
     parser.add_argument('--config', default=None, type=str, help='Configuration file')
 
@@ -40,7 +40,7 @@ def parse_args():
 
     config_args = edict(config_args_dict)
 
-    pprint(config_args)
+    print(config_args)
     print("\n")
 
     return config_args
@@ -56,17 +56,15 @@ def create_experiment_dirs(exp_dir):
         os.path.join(os.path.dirname(__file__))) + "/experiments/" + exp_dir + "/"
     summary_dir = experiment_dir + 'summaries/'
     checkpoint_dir = experiment_dir + 'checkpoints/'
-    test_results_dir = experiment_dir + 'test_results/'
-    train_results_dir = experiment_dir + 'train_results/'
 
-    dirs = [summary_dir, checkpoint_dir, test_results_dir, train_results_dir]
+    dirs = [summary_dir, checkpoint_dir]
     try:
         for dir_ in dirs:
             if not os.path.exists(dir_):
                 os.makedirs(dir_)
         print("Experiment directories created!")
         # return experiment_dir, summary_dir, checkpoint_dir
-        return summary_dir, checkpoint_dir, test_results_dir, train_results_dir
+        return summary_dir, checkpoint_dir
     except Exception as err:
         print("Creating directories error: {0}".format(err))
         exit(-1)

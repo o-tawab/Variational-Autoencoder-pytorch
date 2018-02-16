@@ -1,11 +1,7 @@
 import shutil
 
-import torch.nn as nn
 import torch.optim
 from tensorboardX import SummaryWriter
-from torch.autograd import Variable
-from torch.optim.rmsprop import RMSprop
-from tqdm import tqdm
 
 
 class BaseTrainer:

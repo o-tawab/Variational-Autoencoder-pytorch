@@ -1,14 +1,15 @@
 from __future__ import print_function
-import torch.utils.data
-import torch.nn.init as init
-import torch.backends.cudnn as cudnn
 
-from utils import *
-from model import VAE
-from loss import Loss
-from trainer import Trainer
+import torch.backends.cudnn as cudnn
+import torch.nn.init as init
+import torch.utils.data
+
 from cifar10_data_loader import CIFAR10DataLoader
-from weight_initializer import Initializer
+from graph.loss import Loss
+from graph.model import VAE
+from train.trainer import Trainer
+from utils.weight_initializer import Initializer
+from utils.utils import *
 
 
 def main():
@@ -16,7 +17,7 @@ def main():
     args = parse_args()
 
     # Create the experiment directories
-    args.summary_dir, args.checkpoint_dir, args.test_results_dir, args.train_results_dir = create_experiment_dirs(
+    args.summary_dir, args.checkpoint_dir = create_experiment_dirs(
         args.experiment_dir)
 
     model = VAE()
@@ -45,7 +46,7 @@ def main():
             trainer.train()
             print("Training Finished\n")
         except KeyboardInterrupt:
-            pass
+            print("Training had been Interrupted\n")
 
     if args.to_test:
         print("Testing on training data...")

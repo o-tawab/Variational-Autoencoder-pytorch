@@ -53,7 +53,7 @@ def create_experiment_dirs(exp_dir):
     :return summary_dir, checkpoint_dir:
     """
     experiment_dir = os.path.realpath(
-        os.path.join(os.path.dirname(__file__))) + "/experiments/" + exp_dir + "/"
+        os.path.join(os.path.dirname(__file__))) + "/../experiments/" + exp_dir + "/"
     summary_dir = experiment_dir + 'summaries/'
     checkpoint_dir = experiment_dir + 'checkpoints/'
 

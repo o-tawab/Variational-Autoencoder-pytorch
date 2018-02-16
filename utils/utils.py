@@ -40,7 +40,7 @@ def parse_args():
 
     config_args = edict(config_args_dict)
 
-    print(config_args)
+    pprint(config_args)
     print("\n")
 
     return config_args

@@ -1,10 +1,11 @@
 {
-  "experiment_dir": "VAE_CIFAR10_ce_loss_ld_512",
+  "experiment_dir": "VAE_CIFAR10_mse_loss_ld_512",
 
   "num_epochs": 800,
   "seed": 1,
 
   "dataset": "CIFAR10",
+  "loss": "mse",
   "input_shape":{
     "width": 32,
     "hight": 32,

@@ -37,8 +37,6 @@ class VAE(nn.Module):
 
         self.relu = nn.ReLU()
 
-        # self.softmax = nn.Softmax(dim=1)
-
     def encode(self, x):
         conv1 = self.relu(self.bn1(self.conv1(x)))
         conv2 = self.relu(self.bn2(self.conv2(conv1)))

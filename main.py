@@ -5,9 +5,12 @@ import torch.nn.init as init
 import torch.utils.data
 
 from data_loaders.cifar10_data_loader import CIFAR10DataLoader
-from graph.loss import Loss
-from graph.model import VAE
-from train.trainer import Trainer
+from graph.ce_loss import Loss as Loss_ce
+from graph.mse_loss import Loss as Loss_mse
+from graph.ce_model import VAE as VAE_ce
+from graph.mse_model import VAE as VAE_mse
+from train.ce_trainer import Trainer as Trainer_ce
+from train.mse_trainer import Trainer as Trainer_mse
 from utils.utils import *
 from utils.weight_initializer import Initializer
 
@@ -20,12 +23,18 @@ def main():
     args.summary_dir, args.checkpoint_dir = create_experiment_dirs(
         args.experiment_dir)
 
-    model = VAE()
+    if args.loss == 'ce':
+        model = VAE_ce()
+    else:
+        model = VAE_mse()
 
     # to apply xavier_uniform:
     Initializer.initialize(model=model, initialization=init.xavier_uniform, gain=init.calculate_gain('relu'))
 
-    loss = Loss()
+    if args.loss == 'ce':
+        loss = Loss_ce()
+    else:
+        loss = Loss_mse()
 
     args.cuda = args.cuda and torch.cuda.is_available()
     if args.cuda:
@@ -38,7 +47,10 @@ def main():
     data = CIFAR10DataLoader(args)
     print("Data loaded successfully\n")
 
-    trainer = Trainer(model, loss, data.train_loader, data.test_loader, args)
+    if args.loss == 'ce':
+        trainer = Trainer_ce(model, loss, data.train_loader, data.test_loader, args)
+    else:
+        trainer = Trainer_mse(model, loss, data.train_loader, data.test_loader, args)
 
     if args.to_train:
         try:

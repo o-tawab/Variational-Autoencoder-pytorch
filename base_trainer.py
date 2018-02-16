@@ -14,7 +14,6 @@ class BaseTrainer:
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.args = args
-        self.start_epoch = 0
 
         # Loss function and Optimizer
         self.loss = loss
@@ -57,7 +56,7 @@ class BaseTrainer:
         try:
             print("Loading checkpoint '{}'".format(filename))
             checkpoint = torch.load(filename)
-            self.start_epoch = checkpoint['epoch']
+            self.args.start_epoch = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['state_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             print("Checkpoint loaded successfully from '{}' at (epoch {})\n"

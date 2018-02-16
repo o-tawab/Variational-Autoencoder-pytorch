@@ -43,7 +43,7 @@ class Trainer(BaseTrainer):
             self.summary_writer.add_scalar('training/loss', np.mean(loss_list), epoch)
             self.summary_writer.add_scalar('training/learning_rate', new_lr, epoch)
             self.save_checkpoint({
-                'epoch': cur_epoch + 1,
+                'epoch': epoch + 1,
                 'state_dict': self.model.state_dict(),
                 'optimizer': self.optimizer.state_dict(),
             })

@@ -1,5 +1,5 @@
 {
-  "experiment_dir": "VAE_CIFAR10_ce_loss",
+  "experiment_dir": "VAE_CIFAR10_ce_loss_ld_512",
 
   "num_epochs": 800,
   "seed": 1,
@@ -14,7 +14,7 @@
   "dataloader_workers": 4,
   "shuffle": true,
 
-  "batch_size": 64,
+  "batch_size": 32,
   "weight_decay": 5e-4,
   "learning_rate": 1e-3,
   "learning_rate_decay": 0.99,

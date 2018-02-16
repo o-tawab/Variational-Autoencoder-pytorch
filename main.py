@@ -4,12 +4,12 @@ import torch.backends.cudnn as cudnn
 import torch.nn.init as init
 import torch.utils.data
 
-from cifar10_data_loader import CIFAR10DataLoader
+from data_loaders.cifar10_data_loader import CIFAR10DataLoader
 from graph.loss import Loss
 from graph.model import VAE
 from train.trainer import Trainer
-from utils.weight_initializer import Initializer
 from utils.utils import *
+from utils.weight_initializer import Initializer
 
 
 def main():

@@ -5,9 +5,10 @@ from tensorboardX import SummaryWriter
 
 
 class BaseTrainer:
-    def __init__(self, model, loss, train_loader, test_loader, args):
+    def __init__(self, model, loss, train_loader, val_loader, test_loader, args):
         self.model = model
         self.train_loader = train_loader
+        self.val_loader = val_loader
         self.test_loader = test_loader
         self.args = args
 

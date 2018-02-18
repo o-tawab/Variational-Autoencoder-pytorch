@@ -10,7 +10,7 @@ from train.base_trainer import BaseTrainer
 
 class Trainer(BaseTrainer):
     def __init__(self, model, loss, train_loader, test_loader, args):
-        super(Trainer, self).__init__(model, loss, train_loader, test_loader, args)
+        super(Trainer, self).__init__(model, loss, train_loader, None, test_loader, args)
         self.model = model
         self.args = args
         self.args.start_epoch = 0

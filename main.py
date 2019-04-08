@@ -29,7 +29,7 @@ def main():
         model = VAE_mse()
 
     # to apply xavier_uniform:
-    Initializer.initialize(model=model, initialization=init.xavier_uniform, gain=init.calculate_gain('relu'))
+    Initializer.initialize(model=model, initialization=init.xavier_uniform_, gain=init.calculate_gain('relu'))
 
     if args.loss == 'ce':
         loss = Loss_ce()

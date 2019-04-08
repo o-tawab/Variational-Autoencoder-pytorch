@@ -5,7 +5,7 @@ import torch
 class Loss(nn.Module):
     def __init__(self):
         super(Loss, self).__init__()
-        self.ce_loss = nn.CrossEntropyLoss(size_average=False)
+        self.ce_loss = nn.CrossEntropyLoss(reduction='sum')
 
     def forward(self, recon_x, x, mu, logvar):
         # BCE = F.mse_loss(recon_x, x, size_average=False)

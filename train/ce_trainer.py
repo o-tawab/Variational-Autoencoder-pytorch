@@ -40,7 +40,7 @@ class Trainer:
                 loss = self.loss(recon_batch, data, mu, logvar)
                 loss.backward()
                 self.optimizer.step()
-                loss_list.append(loss.data[0])
+                loss_list.append(loss.item())
 
             print("epoch {}: - loss: {}".format(epoch, np.mean(loss_list)))
             new_lr = self.adjust_learning_rate(epoch)
@@ -58,21 +58,21 @@ class Trainer:
 
     def test(self, cur_epoch):
         print('testing...')
-        self.model.eval()
-        test_loss = 0
-        for i, (data, _) in enumerate(self.test_loader):
-            if self.args.cuda:
-                data = data.cuda()
-            data = Variable(data, volatile=True)
-            recon_batch, mu, logvar = self.model(data)
-            test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
-            _, indices = recon_batch.max(1)
-            indices.data = indices.data.float() / 255
-            if i == 0:
-                n = min(data.size(0), 8)
-                comparison = torch.cat([data[:n],
-                                        indices.view(-1, 3, 32, 32)[:n]])
-                self.summary_writer.add_image('testing_set/image', comparison, cur_epoch)
+        with torch.no_grad():
+            self.model.eval()
+            test_loss = 0
+            for i, (data, _) in enumerate(self.test_loader):
+                if self.args.cuda:
+                    data = data.cuda()
+                recon_batch, mu, logvar = self.model(data)
+                test_loss += self.loss(recon_batch, data, mu, logvar).item()
+                _, indices = recon_batch.max(1)
+                indices.data = indices.data.float() / 255
+                if i == 0:
+                    n = min(data.size(0), 8)
+                    comparison = torch.cat([data[:n],
+                                            indices.view(-1, 3, 32, 32)[:n]])
+                    self.summary_writer.add_images('testing_set/image', comparison, cur_epoch)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))
@@ -81,21 +81,21 @@ class Trainer:
 
     def test_on_trainings_set(self):
         print('testing...')
-        self.model.eval()
-        test_loss = 0
-        for i, (data, _) in enumerate(self.train_loader):
-            if self.args.cuda:
-                data = data.cuda()
-            data = Variable(data, volatile=True)
-            recon_batch, mu, logvar = self.model(data)
-            test_loss += self.loss(recon_batch, data, mu, logvar).data[0]
-            _, indices = recon_batch.max(1)
-            indices.data = indices.data.float() / 255
-            if i % 50 == 0:
-                n = min(data.size(0), 8)
-                comparison = torch.cat([data[:n],
-                                        indices.view(-1, 3, 32, 32)[:n]])
-                self.summary_writer.add_image('training_set/image', comparison, i)
+        with torch.no_grad():
+            self.model.eval()
+            test_loss = 0
+            for i, (data, _) in enumerate(self.train_loader):
+                if self.args.cuda:
+                    data = data.cuda()
+                recon_batch, mu, logvar = self.model(data)
+                test_loss += self.loss(recon_batch, data, mu, logvar).item()
+                _, indices = recon_batch.max(1)
+                indices.data = indices.data.float() / 255
+                if i % 50 == 0:
+                    n = min(data.size(0), 8)
+                    comparison = torch.cat([data[:n],
+                                            indices.view(-1, 3, 32, 32)[:n]])
+                    self.summary_writer.add_images('training_set/image', comparison, i)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test on training set loss: {:.4f}'.format(test_loss))

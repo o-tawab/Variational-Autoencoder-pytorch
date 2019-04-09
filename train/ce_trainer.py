@@ -1,6 +1,7 @@
 from torch.autograd import Variable
 from torch import optim
 import torch
+import torchvision
 
 from tensorboardX import SummaryWriter
 import shutil
@@ -73,6 +74,9 @@ class Trainer:
                     comparison = torch.cat([data[:n],
                                             indices.view(-1, 3, 32, 32)[:n]])
                     self.summary_writer.add_images('testing_set/image', comparison, cur_epoch)
+                    comparison = torchvision.utils.make_grid(comparison, nrow=6)
+                    torchvision.utils.save_image(comparison.cpu(),
+                                                 'results/reconstruction_' + str(cur_epoch) + '.png', nrow=8)
 
         test_loss /= len(self.test_loader.dataset)
         print('====> Test set loss: {:.4f}'.format(test_loss))

@@ -5,7 +5,7 @@ import torch
 class Loss(nn.Module):
     def __init__(self):
         super(Loss, self).__init__()
-        self.mse_loss = nn.MSELoss(size_average=False)
+        self.mse_loss = nn.MSELoss(reduction='sum')
 
     def forward(self, recon_x, x, mu, logvar):
         MSE = self.mse_loss(recon_x, x)
